@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+#pragma region Quest1
+int quest_1();
+
 void err();
 
 char *getpath();
@@ -33,3 +36,10 @@ int* readline_std();
 int addline(char *path, int *line);
 
 void sort_preshuffle(char *path, int high);
+#pragma endregion
+#pragma region Quest_2
+int quest_2();
+
+int *getdate();
+int ffind_code(char *path, int *what, size_t fields);
+#pragma endregion

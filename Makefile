@@ -11,7 +11,7 @@ BPATH=build
 SRCPATH=src
 CLNGPATH:=materials/linters/.clang-format
 
-NAMES_1=state_sort.c
+NAMES_1=state_sort.c state_sort.h
 FILE_1=$(addprefix $(SRCPATH)/,$(NAMES_1))
 OBJ_1=$(FILE_1:.c=.o)
 OUT_1=$(BPATH)/Quest_1.exe
@@ -21,23 +21,23 @@ OUT_1=$(BPATH)/Quest_1.exe
 
 all: state_sort clean
 
-dbg: ss_debug clean gdb ss_rgdb
+dbg: ss_debug ss_rgdb
 
 ss_run: state_sort $(OUT_1)
 	./$(OUT_1)
 
 ss_rgdb: ss_debug $(OUT_1)
-	gdb ./$(OUT_1)
+	gdb $(OUT_1)
 
 state_sort: $(OBJ_1)
 #	$(LC) $(LFLAGS) $(FILE_1)
 #	$(CPPC) $(CPPCFLAGS) $(FILE_1)
 	$(CC) $(CFLAGS) $(OBJ_1) -o $(OUT_1)
 
-ss_debug: $(OBJ_1)
+ss_debug:
 #	$(LC) $(LFLAGS) $(FILE_1)
 #	$(CPPC) $(CPPCFLAGS) $(FILE_1)
-	$(CC) -g $(CFLAGS) $(OBJ_1) -o $(OUT_1)
+	$(CC) $(CFLAGS) -g $(FILE_1) -o $(OUT_1)
 
 clean:
 	rm src/*.o

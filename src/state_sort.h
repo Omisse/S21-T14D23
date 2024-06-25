@@ -1,18 +1,35 @@
-#ifndef BINMASTER
-#define BINMASTER
-#ifndef _INC_STDIO
 #include <stdio.h>
-#endif
-#ifndef V
-#define V
-#endif
+
 void err();
 
 char *getpath();
 
-int get_task();
+int validate_path(char *path);
 
-int *readline(FILE *from);
+int readtask();
 
-void printfile(char *path);
-#endif
+int printfile(char *path);
+
+void printline(int *line);
+
+int* readline(char *path, size_t id);
+
+size_t fgetbytes(char *path);
+
+size_t fgetlines(char *path);
+
+unsigned long long eval_line(char *path, size_t id);
+
+int sortfile(char *path);
+
+int qsortf(char *path, int low, int high);
+
+int qpartf(char *path, int low, int high, int *k);
+
+int swap_lines(char *path, size_t id1, size_t id2);
+
+int* readline_std();
+
+int addline(char *path, int *line);
+
+void sort_preshuffle(char *path, int high);

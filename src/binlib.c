@@ -109,12 +109,7 @@ int quest_3() {
         nxt = validate_path(path);
     }
     if (nxt) {
-        date1 = get_date();
-        nxt = date1 != NULL;
-    }
-    if (nxt) {
-        date2 = get_date();
-        nxt = date2 != NULL;
+        nxt = getdates(&date1, &date2);
     }
     if (nxt) {
         found_ids = ffind_range(path, date1, date2);
@@ -436,7 +431,7 @@ int* get_date() {
         char* ptr = buffer;
         int dotcount = 0;
         int numcount = 0;
-        while (*ptr && nxt && *ptr != '\n') {
+        while (nxt && !isspacer(*ptr)) {
             nxt = *ptr == '.' || (*ptr >= '0' && *ptr <= '9');
             if (*ptr == '.') {
                 dotcount++;
@@ -609,6 +604,167 @@ int is_in_ids(long long int id, const long long int* ids) {
         i++;
     }
     return found;
+}
+
+/*int* get_date() {
+    char* buffer = malloc(sizeof(char) * _strb + sizeof(char*));
+    int* date = malloc(3 * sizeof(int) + sizeof(int*));
+    int nxt = buffer != NULL;
+    fflush(stdout);
+    if (nxt) {
+        cleari();
+        buffer = fgets(buffer, _strb, stdin);
+        nxt = (buffer != NULL);
+    }
+    if (nxt) {
+        char* ptr = buffer;
+        int dotcount = 0;
+        int numcount = 0;
+        while (nxt && !isspacer(*ptr)) {
+            nxt = *ptr == '.' || (*ptr >= '0' && *ptr <= '9');
+            if (*ptr == '.') {
+                dotcount++;
+                nxt = numcount <= 2;
+                if (nxt) {
+                    numcount = 0;
+                }
+            }
+            if (*ptr >= '0' && *ptr <= '9') {
+                numcount++;
+            }
+            ptr++;
+        }
+        if (nxt) {
+            nxt = dotcount == 2;
+        }
+    }
+    if (nxt) {
+
+    }
+    if (nxt) {
+        int tmpVal = date[0];
+        date[0] = date[2];
+        date[2] = tmpVal;
+        nxt = date[1] <= 12 && date[2] <= 31;
+    }
+    if (buffer) {
+        free(buffer);
+    }
+    if (!nxt) {
+        if (date) {
+            free(date);
+            date = NULL;
+        }
+    }
+    return date;
+}*/
+char* _get_date() {
+    char* buffer = malloc(sizeof(char) * _strb + sizeof(char*));
+    int nxt = buffer != NULL;
+    if (nxt) {
+        nxt = scanf("%255s", buffer);
+    }
+    if (nxt) {
+        char* ptr = buffer;
+        int dotcount = 0;
+        int numcount = 0;
+        while (nxt && !isspacer(*ptr)) {
+            nxt = *ptr == '.' || (*ptr >= '0' && *ptr <= '9');
+            if (*ptr == '.') {
+                dotcount++;
+                nxt = numcount <= 2;
+                if (nxt) {
+                    numcount = 0;
+                }
+            }
+            if (*ptr >= '0' && *ptr <= '9') {
+                numcount++;
+            }
+            ptr++;
+        }
+        if (nxt) {
+            nxt = dotcount == 2;
+        }
+    }
+    if (nxt) {
+        char* tptr = realloc(buffer, sizeof(char) * (strlen(buffer) + 1) + sizeof(char*));
+        nxt = tptr != NULL;
+        if (tptr != NULL) {
+            buffer = tptr;
+        }
+    }
+    if (!nxt) {
+        if (buffer) {
+            free(buffer);
+            buffer = NULL;
+        }
+    }
+    return buffer;
+}
+int* _parse_date(char* buffer) {
+    int* date = malloc(3 * sizeof(int) + sizeof(int*));
+    int nxt = date != NULL;
+    char* str = NULL;
+    int field = -1;
+    int inc = 0;
+    do {
+        if (inc == 0) {
+            str = strtok(buffer, ".");
+            inc++;
+        } else {
+            str = strtok(NULL, ".");
+        }
+        if (str != NULL) {
+            field++;
+        }
+        nxt = field < 3;
+        if (nxt && str != NULL) {
+            date[field] = atoi(str);
+        }
+    } while (nxt && str != NULL);
+    nxt = field == 2;
+    if (nxt) {
+        int tmpVal = date[0];
+        date[0] = date[2];
+        date[2] = tmpVal;
+        nxt = date[1] <= 12 && date[2] <= 31;
+    }
+    if (!nxt) {
+        free(date);
+        date = NULL;
+    }
+    return date;
+}
+
+int getdates(int** date1, int** date2) {
+    int nxt = 1;
+    int** dates[2] = {date1, date2};
+    cleari();
+    for (int i = 0; i < 2 && nxt; i++) {
+        char* buff = _get_date();
+        int* date = NULL;
+        nxt = buff != NULL;
+        if (nxt) {
+            date = _parse_date(buff);
+            nxt = date != NULL;
+        }
+        if (nxt) {
+            *(dates[i]) = date;
+        }
+        if (buff) {
+            free(buff);
+            buff = NULL;
+        }
+    }
+    return nxt;
+}
+
+int isspacer(char what) {
+    int bool1 = what == ' ' || what == '\t';
+    int bool2 = what == '\n' || what == '\r';
+    int bool3 = what == '\v' || what == '\f';
+    int bool4 = what == '\0';
+    return bool1 || bool2 || bool3 || bool4;
 }
 
 void cleari() { fseek(stdin, 0, SEEK_END); }

@@ -72,6 +72,14 @@ int rewrite_exclude(const char * path, const long long int * id_exclude);
 
 int is_in_ids(long long int id, const long long int * ids);
 
+char* _get_date();
+
+int * _parse_date(char * buffer);
+
+int getdates(int** date1, int** date2);
+
+int isspacer(char what);
+
 void cleari();
 
 unsigned long long eval_date(const int * date);

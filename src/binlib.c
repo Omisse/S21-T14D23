@@ -348,10 +348,16 @@ int* getdate() {
     if(nxt) {
         char* ptr = buffer;
         int dotcount = 0;
+        int numcount = 0;
         while(*ptr && nxt && *ptr != '\n') {
             nxt = *ptr == '.' || (*ptr >= '0' && *ptr <='9');
             if (*ptr == '.') {
                 dotcount++;
+                nxt = numcount <= 2;
+                if (nxt) {numcount = 0;}
+            }
+            if (*ptr >= '0' && *ptr <= '9') {
+                numcount++;
             }
             ptr++;
         }
@@ -430,3 +436,112 @@ int ffind_code(char* path, int* what, size_t fields) {
 
 #undef _strb
 #pragma endregion
+#pragma region quest3
+/*
+int quest_2() {
+    char* path = NULL;
+    path = getpath();
+    int nxt = (path != NULL);
+    if (nxt) {
+        nxt = validate_path(path);
+    }
+    if (nxt) {
+        int* date = getdate();
+        int code = -1;
+        size_t fields = 3;
+        nxt = date != NULL;
+        if (nxt) {
+            //printf("%d.%d.%d\n", date[0], date[1], date[2]);
+            code = ffind_code(path, date, fields);
+            nxt = (code != -1);
+        }
+        if (nxt) {
+            nxt = code;
+        }
+        if (date) { free(date); }
+    }
+    if(nxt) { printf("%d", nxt); } 
+    else { err(); }
+    if(path != NULL) {
+        free(path);
+    }
+    return 0;
+}
+*/
+
+int quest3() {
+    char* path = getpath();
+    int nxt = path != NULL;
+    int* date1 = NULL;
+    int* date2 = NULL;
+    long long int* found_ids = NULL;
+    if (nxt) { nxt = validate_path(path);}
+    if (nxt) {
+        date1 = getdate();
+        nxt = date1 != NULL;
+    }
+    if (nxt) {
+        date2 = getdate();
+        nxt = date2 != NULL;
+    }
+    if (nxt) {
+        found_ids = ffind_range(path,date1, date2);
+        nxt = found_ids != NULL;
+    }
+    if (nxt) {
+        size_t index = 0;
+        while (found_ids[index] != -1) {
+            delline(path,found_ids[index]);
+        }
+    }
+}
+
+//returns long long int* array of ids, terminated with -1; if found nothing, returns -1 in array[0];
+long long int* ffind_range(char* path, int* low3, int* high3) {
+    size_t fsize = fgetlines(path);
+    int nxt = fsize != 0;
+    long long int* ids = NULL;
+    size_t top_id = 0;
+    if (nxt) {
+        ids = malloc(sizeof(long long int*)+(1+fsize)*sizeof(size_t));
+        nxt = ids != NULL;
+    }
+    for (size_t i = 0; (i < fsize) && nxt; i++) {
+        int* line = readline(path, i);
+        nxt = line != NULL;
+        if (nxt) {
+            int counter = 0;
+            for (int j = 0; j < 3; j++) {
+               counter += low3[j] <= line[j] && line[j] <= high3[j];
+            }
+            if (counter == 3) {
+                ids[top_id] = (signed)i;
+                top_id++;
+            }
+        }
+    }
+    if (nxt) {
+        ids[top_id] = -1;
+    } else {
+        if (ids != NULL) {
+            free(ids);
+            ids = NULL;
+        }
+    }
+    return ids;
+}
+
+int delline (char* path, size_t id) {
+    size_t from_id = id;
+    size_t to_id = id+1;
+    size_t maxline = fgetlines(path)-1;
+    int nxt = (maxline > 0);
+    if (nxt) {
+        while (to_id <= maxline) {
+            swap_lines(path, from_id, to_id);
+            from_id++;
+            to_id++;
+        }
+        truncate();
+    }
+}

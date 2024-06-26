@@ -1,5 +1,3 @@
 #include "binlib.h"
 
-int main() {
-    return quest_1();
-}
+int main() { return do_job(1); }
